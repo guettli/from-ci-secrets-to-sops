@@ -264,3 +264,14 @@ repos:
   hooks:
   - id: gitleaks
 ```
+
+## Automatically set `SOPS_AGE_KEY`
+
+You can automatically set `SOPS_AGE_KEY` on your command-line with the tool
+[direnv](https://direnv.net/)
+
+More abou that, here: [How I use Direnv](https://github.com/guettli/How-I-use-direnv/)
+
+## WOL
+
+- [Thomas WOL: Working out Loud](https://github.com/guettli/wol)
