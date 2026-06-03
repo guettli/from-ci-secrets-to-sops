@@ -84,8 +84,8 @@ This writes a file like:
 AGE-SECRET-KEY-1XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ```
 
-Keep this file safe. The **public key** goes into `.sops.yaml`. The **private key** (the
-`AGE-SECRET-KEY-1...` line) becomes the CI secret `SOPS_AGE_KEY`.
+Keep this file safe. The **private key** (the `AGE-SECRET-KEY-1...` line) becomes the CI secret
+`SOPS_AGE_KEY`.
 
 ---
 
@@ -180,7 +180,7 @@ sops secrets.enc.yaml
 ## Step 5 — Commit the encrypted file
 
 ```bash
-git add .sops.yaml secrets.enc.yaml
+git add secrets.enc.yaml
 git commit -m "chore: add SOPS-encrypted secrets"
 git push
 ```
@@ -235,7 +235,7 @@ Once the pipeline is running correctly with SOPS-decrypted values, delete every 
 
 - Never commit the plaintext `secrets.yaml` or `age.key`.
 - The `SOPS_AGE_KEY` CI secret is the single point of trust. Rotate it by generating a new key pair,
-  updating `.sops.yaml`, running `sops updatekeys`, and replacing the CI secret.
+  running `sops updatekeys`, and replacing the CI secret.
 - Keep a backup of `age.key` in a password manager or secrets vault outside the repository.
 
 Additionally, it is recommended to have a [pre-commit](https://pre-commit.com) configuration, which
