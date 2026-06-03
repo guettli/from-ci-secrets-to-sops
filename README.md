@@ -1,6 +1,6 @@
 # Migrating Secrets to SOPS
 
-In the past I used `.env` files with `KEY=VALUE` pairs to store secrets localy (outside the `git`
+In the past I used `.env` files with `KEY=VALUE` pairs to store secrets locally (outside the `git`
 repo). In CI I used the same or similar key-value pairs.
 
 This has some drawback:
@@ -16,7 +16,7 @@ The solution is: [SOPS](https://getsops.io/) (*S*ecrets *OP*eration*S*)
 
 > SOPS encrypts configuration files while keeping the structure visible. Keys are not encrypted,
 > while values and comments are encrypted. This allows you to understand the configuration without
-> seeing sensible values. Also commented-out secrets aren’t suddenly visible to everyone!
+> seeing sensitive values. Also commented-out secrets aren’t suddenly visible to everyone!
 
 Together with [Age](https://github.com/FiloSottile/age) (A simple, modern and secure encryption
 tool), you can store the secrets in `git`. The keys are readable, and the values are encrypted with
@@ -26,7 +26,7 @@ In `.env` and in CI config you only store `SOPS_AGE_KEY`.
 
 ## Example
 
-The keys are readalbe, the values are encryted:
+The keys are readable, the values are encrypted:
 
 `secrets.enc.yaml`
 
@@ -211,8 +211,10 @@ already set as a CI secret from Step 2.
 
 ```bash
 # Install sops if not in the runner image
+# Replace <tag> with the latest version from https://github.com/getsops/sops/releases
+SOPS_TAG=$(curl -s https://api.github.com/repos/getsops/sops/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
 curl -Lo /usr/local/bin/sops \
-  https://github.com/getsops/sops/releases/latest/download/sops-v3.x.x.linux.amd64
+  "https://github.com/getsops/sops/releases/download/${SOPS_TAG}/sops-${SOPS_TAG}.linux.amd64"
 chmod +x /usr/local/bin/sops
 
 # Decrypt and export all keys as environment variables
