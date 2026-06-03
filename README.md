@@ -1,7 +1,8 @@
 # Migrating Secrets to SOPS
 
-In the past I used `.env` files with `KEY=VALUE` pairs to store secrets locally (outside the `git`
-repo). In CI I used the same or similar key-value pairs.
+In the past I used `.env` files with `KEY=VALUE` pairs to store secrets locally. This file was not
+stored in `git`, and handling that file was always a bit fragile. In CI I used the same or similar
+key-value pairs.
 
 This has some drawback:
 
@@ -9,8 +10,8 @@ This has some drawback:
 - I don't have a history of the changes: I can't see at what time a secret got update. This can lead
   to uncertainty, when you work in a team. Example: Today a secret does no longer work. Did someone
   update the secret? Nobody knows...
-- I can't easily look at the secrets in CI. Platforms like Github/Forgejo do not show you the value
-  in the UI.
+- I can't easily look at the secret values in CI. Platforms like Github/Forgejo do not show you the
+  value.
 
 The solution is: [SOPS](https://getsops.io/) (*S*ecrets *OP*eration*S*)
 
@@ -62,6 +63,8 @@ sops secrets.enc.yaml
 
 ## Switching from Secrets in CI to SOPS+Age
 
+Requirements:
+
 - [`age`](https://github.com/FiloSottile/age) installed locally
 - [`sops`](https://github.com/getsops/sops) installed locally
 - Access to add/remove secrets in your CI provider
@@ -98,23 +101,7 @@ This is the **only** CI secret you will need going forward.
 
 ---
 
-## Step 3 — Configure SOPS to use that key
-
-Create `.sops.yaml` at the root of your repository:
-
-```yaml
-creation_rules:
-  - path_regex: secrets\.yaml$
-    age: age1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
-
-Replace the `age1...` value with the public key from `age.key`.
-
-Commit `.sops.yaml` to the repository — it contains only the public key and is safe to commit.
-
----
-
-## Step 4 — Recover the current secret values from CI
+## Step 3 — Recover the current secret values from CI
 
 Because CI secret values are write-only (not readable via UI or API), use the CI runner itself to
 reveal them safely.
@@ -156,9 +143,9 @@ Trigger this job once (manually via the UI) and copy the encrypted ASCII-armored
 
 ---
 
-## Step 5 — Create and encrypt secrets.yaml
+## Step 4 — Create and encrypt secrets.yaml
 
-Using the values collected in Step 4, create a plaintext `secrets.yaml` locally:
+Using the values collected in Step 3, create a plaintext `secrets.yaml` locally:
 
 ```yaml
 FOO: "value-of-foo"
@@ -190,7 +177,7 @@ sops secrets.enc.yaml
 
 ---
 
-## Step 6 — Commit the encrypted file
+## Step 5 — Commit the encrypted file
 
 ```bash
 git add .sops.yaml secrets.enc.yaml
@@ -202,7 +189,7 @@ The encrypted file is safe to store in a public or private repository.
 
 ---
 
-## Step 7 — Update your CI pipeline to use SOPS
+## Step 6 — Update your CI pipeline to use SOPS
 
 In every job that needs secrets, decrypt `secrets.enc.yaml` and source the values. `SOPS_AGE_KEY` is
 already set as a CI secret from Step 2.
@@ -231,7 +218,7 @@ eval "$(sops --decrypt secrets.enc.yaml | \
 
 ---
 
-## Step 8 — Remove all old CI secrets
+## Step 7 — Remove all old CI secrets
 
 Once the pipeline is running correctly with SOPS-decrypted values, delete every CI secret **except
 `SOPS_AGE_KEY`** from the provider's secret store.
