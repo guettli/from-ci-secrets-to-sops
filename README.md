@@ -247,9 +247,9 @@ repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   ...
 
-- repo: https://github.com/gitleaks/gitleaks
+- repo: https://github.com/betterleaks/betterleaks
   hooks:
-  - id: gitleaks
+  - id: betterleaks
 ```
 
 ## Automatically set `SOPS_AGE_KEY`
